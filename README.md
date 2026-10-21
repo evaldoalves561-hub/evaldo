@@ -51,4 +51,4 @@ O `.env` aponta para o projeto Supabase `app-comparacao-tabelas`; a chave ali é
 
 ## Publicar
 
-`.github/workflows/deploy.yml` testa, gera o build e publica no GitHub Pages a cada push na `main` (ative em *Settings → Pages → Source: GitHub Actions*; no plano gratuito do GitHub o Pages exige repositório público, o que é seguro aqui porque os dados ficam protegidos pelo login e pelo RLS).
+`.github/workflows/deploy.yml` testa, gera o build e publica a pasta `dist/` no branch `gh-pages` a cada push na `main`. O GitHub Pages serve esse branch em https://evaldoalves561-hub.github.io/evaldo/ (Settings → Pages → Branch: gh-pages). O repositório é público, o que é seguro aqui porque os dados ficam protegidos pelo login e pelo RLS.
