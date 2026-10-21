@@ -5,6 +5,7 @@ import { BASES, compareBase, fechamentoInsights, kpis, mergeGroups, statusChange
 import { fmt, fmtBRL, fmtBRLCompact, fmtCompact, fmtPct, fmtSigned, fmtSignedBRL, fmtSignedPct } from '../lib/format.ts'
 import { COLORS, Card, ChartTip, Delta, Insights, Kpi, axisProps } from './ui.tsx'
 import { GroupTable } from './GroupTable.tsx'
+import { NotesPanel } from './Notes.tsx'
 
 interface Props {
   cur: Fechamento
@@ -39,6 +40,10 @@ export function ResumoView({ cur, curBases, prev, prevBases }: Props) {
 
       <Card title="Principais conclusões" subtitle={prev ? `${cur.label} comparado com ${prev.label}` : `Resumo automático de ${cur.label}`}>
         <Insights items={insights} />
+      </Card>
+
+      <Card title="Anotações do fechamento" subtitle="Observações, justificativas e combinados sobre este fechamento">
+        <NotesPanel target={{ fechamento_id: cur.id, base: null, chave: null }} compact />
       </Card>
 
       {BASES.map((def, i) => (

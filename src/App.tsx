@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import type { AppUser, Bases, Fechamento, Role } from './lib/types.ts'
+import type { Anotacao, AppUser, Bases, Fechamento, Role } from './lib/types.ts'
 import { myAccess, store } from './lib/store.ts'
 import { supabase, supabaseConfigured } from './lib/supabase.ts'
 import { fmtDate } from './lib/format.ts'
@@ -11,6 +11,8 @@ import { RegistrosView } from './components/RegistrosView.tsx'
 import { BasesView } from './components/BasesView.tsx'
 import { UsersView } from './components/UsersView.tsx'
 import { UploadFechamento } from './components/UploadFechamento.tsx'
+import { EditFechamento, Lixeira } from './components/EditFechamento.tsx'
+import { NotesPage, NotesProvider, notesFor } from './components/Notes.tsx'
 
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
@@ -45,18 +47,20 @@ export default function App() {
   return <Workspace email={email} role={access.role} />
 }
 
-type View = 'resumo' | 'evolucao' | 'registros' | 'bases' | 'usuarios' | 'upload' | 'senha'
+type View = 'resumo' | 'evolucao' | 'registros' | 'bases' | 'anotacoes' | 'usuarios' | 'lixeira' | 'editar' | 'upload' | 'senha'
 
 const NAV: { id: View; label: string; admin?: boolean }[] = [
   { id: 'resumo', label: 'Resumo do fechamento' },
   { id: 'evolucao', label: 'Evolução' },
   { id: 'registros', label: 'O que mudou (registros)' },
   { id: 'bases', label: 'Bases de dados' },
+  { id: 'anotacoes', label: 'Anotações' },
   { id: 'usuarios', label: 'Usuários e acesso', admin: true },
 ]
 
 function Workspace({ email, role }: { email: string | null; role: Role }) {
-  const [list, setList] = useState<Fechamento[] | null>(null)
+  const [all, setAll] = useState<Fechamento[] | null>(null)
+  const [notes, setNotes] = useState<Anotacao[]>([])
   const [bases, setBases] = useState<Record<string, Bases>>({})
   const [selId, setSelId] = useState<string | null>(null)
   const [cmpId, setCmpId] = useState<string | null>(null)
@@ -64,11 +68,23 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
   const [error, setError] = useState('')
   const canEdit = role === 'admin' || role === 'editor'
 
+  const list = all ? all.filter((f) => !f.deleted_at) : null
+  const trash = all ? all.filter((f) => f.deleted_at) : []
+
+  const loadNotes = useCallback(async () => {
+    try {
+      setNotes(await store.listAnotacoes())
+    } catch {
+      setNotes([])
+    }
+  }, [])
+
   const reload = useCallback(async (select?: string) => {
     try {
-      const l = await store.listFechamentos()
-      const b = await store.loadBases(l.map((f) => f.id))
-      setList(l)
+      const everything = await store.listFechamentos()
+      const l = everything.filter((f) => !f.deleted_at)
+      const b = await store.loadBases(everything.map((f) => f.id))
+      setAll(everything)
       setBases(b)
       const sel = select ?? l[l.length - 1]?.id ?? null
       setSelId(sel)
@@ -76,12 +92,13 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
       setCmpId(idx > 0 ? l[idx - 1].id : null)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro ao carregar os fechamentos.')
-      setList([])
+      setAll([])
     }
   }, [])
   useEffect(() => {
     reload()
-  }, [reload])
+    loadNotes()
+  }, [reload, loadNotes])
 
   const cur = list?.find((f) => f.id === selId) ?? null
   const prev = list?.find((f) => f.id === cmpId && f.id !== selId) ?? null
@@ -90,7 +107,7 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
     setSelId(id)
     const idx = list!.findIndex((f) => f.id === id)
     setCmpId(idx > 0 ? list![idx - 1].id : null)
-    if (view === 'upload') setView('resumo')
+    if (['upload', 'editar', 'lixeira', 'anotacoes', 'usuarios'].includes(view)) setView('resumo')
   }
 
   async function upload(b: Bases, label: string, date: string, fileName: string) {
@@ -100,9 +117,19 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
   }
 
   async function remove() {
-    if (!cur || !confirm(`Excluir "${cur.label}" e todas as suas bases? Essa ação não pode ser desfeita.`)) return
-    await store.deleteFechamento(cur.id)
+    if (!cur || !confirm(`Mover "${cur.label}" para a lixeira? Você pode restaurá-lo depois, sem perder nada.`)) return
+    await store.trashFechamento(cur.id, email)
     reload()
+  }
+  async function restore(f: Fechamento) {
+    await store.restoreFechamento(f.id)
+    await reload(f.id)
+    setView('resumo')
+  }
+  async function destroy(f: Fechamento) {
+    if (!confirm(`Excluir "${f.label}" definitivamente? As bases desse fechamento serão apagadas e isso não pode ser desfeito.`)) return
+    await store.deleteFechamento(f.id)
+    reload(selId ?? undefined)
   }
 
   if (view === 'senha') return <ChangePasswordWrap onDone={() => setView('resumo')} />
@@ -110,6 +137,7 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
   const roleLabel = role === 'admin' ? 'Administrador' : role === 'editor' ? 'Editor' : 'Leitor'
 
   return (
+    <NotesProvider notes={notes} me={email} isAdmin={role === 'admin'} refresh={loadNotes}>
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
@@ -122,6 +150,11 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
               {n.label}
             </button>
           ))}
+          {canEdit && trash.length > 0 && (
+            <button className={`side-item ${view === 'lixeira' ? 'active' : ''}`} onClick={() => setView('lixeira')}>
+              Lixeira ({trash.length})
+            </button>
+          )}
         </nav>
         <div className="side-label">Fechamentos</div>
         <nav className="side-list" style={{ overflow: 'auto', maxHeight: 320 }}>
@@ -175,6 +208,27 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
             </div>
             <UsersView me={email} />
           </>
+        ) : view === 'lixeira' ? (
+          <>
+            <div className="page-head">
+              <div>
+                <div className="eyebrow">Fechamentos excluídos</div>
+                <h1>Lixeira</h1>
+              </div>
+            </div>
+            <Lixeira items={trash} isAdmin={role === 'admin'} onRestore={restore} onDelete={destroy} />
+          </>
+        ) : view === 'anotacoes' ? (
+          <>
+            <div className="page-head">
+              <div>
+                <div className="eyebrow">Anotações</div>
+                <h1>Anotações</h1>
+                <p className="muted" style={{ margin: '4px 0 0' }}>Anote no fechamento (no Resumo do fechamento) ou em cada registro (ícone ✎ nas tabelas "O que mudou" e "Bases de dados"). Anotações de um registro continuam aparecendo nos fechamentos seguintes.</p>
+              </div>
+            </div>
+            <NotesPage fechamentos={all ?? []} onOpenFechamento={(id) => { select(id); setView('resumo') }} />
+          </>
         ) : view === 'upload' ? (
           <UploadFechamento onSubmit={upload} onCancel={() => setView('resumo')} />
         ) : !cur ? (
@@ -191,14 +245,16 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
           <>
             <div className="page-head">
               <div>
-                <div className="eyebrow">{NAV.find((n) => n.id === view)?.label}</div>
+                <div className="eyebrow">{view === 'editar' ? 'Editar fechamento' : NAV.find((n) => n.id === view)?.label}</div>
                 <h1>{view === 'evolucao' ? 'Evolução dos fechamentos' : cur.label}</h1>
                 {view !== 'evolucao' && (
                   <p className="muted" style={{ margin: '4px 0 0' }}>
                     Referência {fmtDate(cur.reference_date)}
                     {cur.file_name ? ` · ${cur.file_name}` : ''}
+                    {notesFor(notes, { fechamento_id: cur.id, base: null, chave: null }).length > 0 && ` · ${notesFor(notes, { fechamento_id: cur.id, base: null, chave: null }).length} anotação(ões)`}
                   </p>
                 )}
+                {view !== 'evolucao' && cur.descricao && <p style={{ margin: '6px 0 0', maxWidth: 760, whiteSpace: 'pre-wrap' }}>{cur.descricao}</p>}
               </div>
               {view !== 'evolucao' && (
                 <div className="toolbar">
@@ -215,14 +271,23 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
                         ))}
                     </select>
                   </label>
+                  <button className="btn" onClick={() => setView('resumo')} style={{ alignSelf: 'flex-end', display: view === 'editar' ? 'inline-flex' : 'none' }}>
+                    Ver relatório
+                  </button>
+                  {canEdit && view !== 'editar' && (
+                    <button className="btn" onClick={() => setView('editar')} style={{ alignSelf: 'flex-end' }}>
+                      ✎ Editar
+                    </button>
+                  )}
                   {canEdit && (
                     <button className="btn ghost danger" onClick={remove} style={{ alignSelf: 'flex-end' }}>
-                      Excluir
+                      Mover para lixeira
                     </button>
                   )}
                 </div>
               )}
             </div>
+            {view === 'editar' && <EditFechamento key={cur.id} f={cur} onSaved={() => reload(cur.id)} onClose={() => setView('resumo')} />}
             {view === 'resumo' && <ResumoView key={cur.id + (prev?.id ?? '')} cur={cur} curBases={bases[cur.id] ?? {}} prev={prev} prevBases={prev ? (bases[prev.id] ?? {}) : null} />}
             {view === 'evolucao' && <EvolucaoView items={list.map((f) => ({ f, bases: bases[f.id] ?? {} }))} />}
             {view === 'registros' && <RegistrosView cur={cur} curBases={bases[cur.id] ?? {}} prev={prev} prevBases={prev ? (bases[prev.id] ?? {}) : null} />}
@@ -231,6 +296,7 @@ function Workspace({ email, role }: { email: string | null; role: Role }) {
         )}
       </main>
     </div>
+    </NotesProvider>
   )
 }
 

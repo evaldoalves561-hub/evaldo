@@ -15,6 +15,33 @@ export interface Fechamento {
   file_name: string | null
   created_by: string | null
   created_at: string
+  descricao?: string | null
+  updated_at?: string | null
+  deleted_at?: string | null
+  deleted_by?: string | null
+}
+
+export interface Anotacao {
+  id: string
+  fechamento_id: string | null
+  base: BaseId | null
+  chave: string | null
+  texto: string
+  autor: string
+  created_at: string
+  updated_at: string | null
+  deleted_at: string | null
+}
+
+export interface HistoricoItem {
+  id: number
+  tabela: string
+  registro_id: string
+  acao: 'criado' | 'editado' | 'enviado_lixeira' | 'restaurado' | 'excluido_definitivo'
+  antes: Record<string, unknown> | null
+  depois: Record<string, unknown> | null
+  autor: string | null
+  created_at: string
 }
 
 export type Bases = Partial<Record<BaseId, ParsedTable>>

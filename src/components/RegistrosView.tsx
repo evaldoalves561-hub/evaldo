@@ -4,6 +4,7 @@ import { BASES, BASE_BY_ID, KEY_COL, compareBase, findCol, rowValue } from '../l
 import { downloadCsv } from '../lib/csv.ts'
 import { fmt, fmtBRL, fmtCell, fmtSigned } from '../lib/format.ts'
 import { COLORS, Card, Delta, Kpi } from './ui.tsx'
+import { NoteButton } from './Notes.tsx'
 
 type Tipo = 'todos' | 'novos' | 'saiu' | 'alterados'
 const LIMIT = 400
@@ -121,6 +122,7 @@ export function RegistrosView({ cur, curBases, prev, prevBases }: { cur: Fechame
               <table>
                 <thead>
                   <tr>
+                    <th></th>
                     <th>Situação</th>
                     <th>Chave</th>
                     <th>Regional</th>
@@ -132,6 +134,9 @@ export function RegistrosView({ cur, curBases, prev, prevBases }: { cur: Fechame
                 <tbody>
                   {filtered.slice(0, LIMIT).map((i, idx) => (
                     <tr key={idx}>
+                      <td>
+                        <NoteButton fechamento_id={cur.id} base={baseId} chave={i.key} />
+                      </td>
                       <td>
                         <span className={`badge ${i.tipo === 'novos' ? 'removed' : i.tipo === 'saiu' ? 'added' : 'modified'}`}>
                           {i.tipo === 'novos' ? t.novo1 : i.tipo === 'saiu' ? t.saiu1 : 'Alterado'}
@@ -155,7 +160,7 @@ export function RegistrosView({ cur, curBases, prev, prevBases }: { cur: Fechame
                   ))}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="muted" style={{ textAlign: 'center', padding: 24 }}>
+                      <td colSpan={7} className="muted" style={{ textAlign: 'center', padding: 24 }}>
                         Nenhum registro encontrado.
                       </td>
                     </tr>

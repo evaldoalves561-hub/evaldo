@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
 import type { BaseId, Bases, Fechamento } from '../lib/types.ts'
-import { BASES, BASE_BY_ID, findCol } from '../lib/fechamento.ts'
+import { BASES, BASE_BY_ID, findCol, rowKey } from '../lib/fechamento.ts'
 import { downloadCsv } from '../lib/csv.ts'
 import { fmt, fmtCell } from '../lib/format.ts'
 import { Card } from './ui.tsx'
+import { NoteButton } from './Notes.tsx'
 
 const LIMIT = 300
 
@@ -57,6 +58,7 @@ export function BasesView({ cur, bases }: { cur: Fechamento; bases: Bases }) {
             <table>
               <thead>
                 <tr>
+                  <th></th>
                   {table.columns.map((c) => (
                     <th key={c}>{c}</th>
                   ))}
@@ -65,6 +67,9 @@ export function BasesView({ cur, bases }: { cur: Fechamento; bases: Bases }) {
               <tbody>
                 {rows.slice(0, LIMIT).map((r, i) => (
                   <tr key={i}>
+                    <td>
+                      <NoteButton fechamento_id={cur.id} base={baseId} chave={rowKey(def, table, r)} />
+                    </td>
                     {table.columns.map((c) => (
                       <td key={c} className={typeof r[c] === 'number' ? 'num small' : 'small'} style={{ maxWidth: 320, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={String(r[c] ?? '')}>
                         {r[c] === null ? '' : fmtCell(r[c])}
