@@ -42,7 +42,7 @@ export function Delta({ value, text, invert = false }: { value: number | null; t
   )
 }
 
-const ICON: Record<Insight['tone'], string> = { up: '↑', down: '↓', neutral: 'i', warn: '!' }
+const ICON: Record<Insight['tone'], string> = { up: '✓', down: '!', neutral: 'i', warn: '!' }
 
 export function Insights({ items }: { items: Insight[] }) {
   return (

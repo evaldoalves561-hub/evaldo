@@ -14,8 +14,15 @@ export function fmtDate(iso: string): string {
   return d && m && y ? `${d}/${m}/${y}` : iso
 }
 
+const brl = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' })
+const brlCompact = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', notation: 'compact', maximumFractionDigits: 1 })
+export const fmtBRL = (n: number | null | undefined) => (n === null || n === undefined || Number.isNaN(n) ? '—' : brl.format(n))
+export const fmtBRLCompact = (n: number) => (Math.abs(n) >= 100000 ? brlCompact.format(n) : brl.format(n))
+export const fmtSignedBRL = (n: number | null | undefined) => (n === null || n === undefined ? '—' : (n > 0 ? '+' : '') + brl.format(n))
+
 export function fmtCell(v: unknown): string {
   if (v === null || v === undefined || v === '') return '(vazio)'
   if (typeof v === 'number') return nf.format(v)
-  return String(v)
+  const s = String(v)
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? fmtDate(s) : s
 }
