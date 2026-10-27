@@ -1,0 +1,4 @@
+config.ini
+*.log
+planilhas/
+__pycache__/
