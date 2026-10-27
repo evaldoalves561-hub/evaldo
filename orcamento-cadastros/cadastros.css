@@ -22,3 +22,8 @@ tr.cad-mud td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
 .cad-save{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:12px;padding:10px 14px;background:var(--warn-soft);border:1px solid var(--warn);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
 .cad-save b{color:var(--warn)}
 @media (max-width:760px){.cad-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cad-plan{font-weight:600;border-radius:999px!important}
+.cad-plan.p-app{background:#DCE8F5;color:#1D4E89}.cad-plan.p-pausa{background:var(--group);color:var(--muted)}.cad-plan.p-fora{background:var(--warn-soft);color:var(--warn)}
+.cad-imp{border-left:4px solid var(--accent)}
+.cad-imp-res{margin-top:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:13px;line-height:1.6}
+.cad-sug{font-size:11px;color:var(--accent);margin-top:2px;white-space:nowrap}

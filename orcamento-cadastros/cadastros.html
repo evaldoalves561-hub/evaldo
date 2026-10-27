@@ -3,20 +3,24 @@
       <p class="desc" style="margin:4px 0 0">O que antes ficava na planilha CONFIGURAÇÃO agora é editado aqui: empresas e obras ativas, quem planeja cada insumo, gerentes por departamento e quem usa o aplicativo. Nada é gravado até você clicar em <b>Salvar</b>.</p></div></div>
       <div class="subtabs" id="cad-sub" role="group" aria-label="Cadastros"><button type="button" data-cad="obras" aria-pressed="true">Empresas e obras</button><button type="button" data-cad="quem" aria-pressed="false">Quem planeja</button><button type="button" data-cad="ger" aria-pressed="false">Gerentes</button></div>
       <p class="muted" id="cad-msg" style="margin:8px 0 0"></p></div>
+    <div class="card cad-imp"><div class="row" style="justify-content:space-between;gap:8px;align-items:center"><div><h2 style="margin:0;font-size:16px">Atualizar com Excel</h2>
+      <p class="desc" style="margin:2px 0 0">Suba a <b>estrutura do ERP</b> (aba Base - Geral) e/ou a <b>planilha de obras com a situação</b> (ativa/inativa). Obras novas recebem a base modelo, quem planeja e a Regional pelo padrão, e ganham uma linha de gerente por área. O que já está cadastrado não muda.</p></div>
+      <label class="btn primary" for="cad-imp-file" style="white-space:nowrap">Escolher 1 ou 2 arquivos</label><input type="file" id="cad-imp-file" accept=".xlsx,.xls,.xlsb" multiple hidden></div>
+      <div class="cad-imp-res" id="cad-imp-res" hidden></div></div>
     <div id="cad-kpi" class="ind-kpis cad-kpis"></div>
 
     <div class="card" id="cad-obras">
       <div class="cad-fbar"><div><label class="lbl" for="co-q">Buscar</label><input type="search" id="co-q" placeholder="Código, obra, empresa ou Regional"></div>
         <div><label class="lbl" for="co-emp">Empresa</label><select id="co-emp"><option value="">Todas as empresas</option></select></div>
-        <div><label class="lbl" for="co-st">Mostrar</label><select id="co-st"><option value="ativas">Ativas</option><option value="todas">Todas</option><option value="inativas">Inativas</option><option value="app">Planejam no app</option><option value="fora">Fora do app</option><option value="semger">Sem gerente em alguma área</option><option value="semreg">Sem Regional</option></select></div>
+        <div><label class="lbl" for="co-st">Mostrar</label><select id="co-st"><option value="ativas">Ativas</option><option value="todas">Todas</option><option value="inativas">Inativas</option><option value="app">Planejam no app</option><option value="pausa">Pausadas</option><option value="fora">Fora do app</option><option value="semger">Sem gerente em alguma área</option><option value="semreg">Sem Regional</option></select></div>
         <span class="muted" id="co-n" style="align-self:end;font-size:12px"></span></div>
       <div class="cad-selbar" id="co-selbar" hidden><b id="co-seln"></b>
         <button class="btn sm" data-co-lote="ativar">Ativar</button><button class="btn sm" data-co-lote="inativar">Inativar</button>
-        <button class="btn sm" data-co-lote="app">Planejam no app</button><button class="btn sm" data-co-lote="fora">Fora do app</button>
+        <button class="btn sm" data-co-lote="app">Planejam no app</button><button class="btn sm" data-co-lote="pausa">Pausar</button><button class="btn sm" data-co-lote="fora">Fora do app</button>
         <span class="row" style="gap:4px"><input id="co-lote-reg" list="cad-regs" placeholder="Regional" style="width:130px"><button class="btn sm" data-co-lote="reg">Definir Regional</button></span>
         <button class="btn sm" data-co-lote="limpar">Desmarcar</button></div>
       <datalist id="cad-regs"></datalist>
-      <p class="muted" style="font-size:12px;margin:6px 0">Clique em <span class="pill enviado">Ativa</span> ou <span class="pill validado">No app</span> para trocar. Áreas em vermelho não têm gerente. Para marcar só uma área como fora do app, use “Planejamento fora do aplicativo” em Gerentes e acessos.</p>
+      <p class="muted" style="font-size:12px;margin:6px 0"><b>Situação</b> vem do ERP (clique para trocar). <b>Pausada</b> é sua: a obra continua ativa, mas sai do planejamento e dos indicadores, e nenhuma planilha desfaz isso. Áreas em vermelho não têm gerente. Para marcar só uma área como fora do app, use “Planejamento fora do aplicativo” em Gerentes e acessos.</p>
       <div class="tbl-box cad-box"><table class="list" id="co-tbl"></table></div>
       <details class="cad-nova"><summary>Incluir obra nova</summary>
         <div class="cad-fbar" style="margin-top:8px"><div><label class="lbl" for="cn-emp">Cód. empresa</label><input id="cn-emp" style="width:90px"></div><div><label class="lbl" for="cn-empn">Nome da empresa</label><input id="cn-empn" placeholder="(se for empresa nova)"></div>
@@ -42,7 +46,7 @@
         <div><label class="lbl" for="cadg-emp">Empresa</label><select id="cadg-emp"></select></div>
         <label style="align-self:end;font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="cadg-pend"> Só com pendência</label>
         <span style="flex:1"></span>
-        <div class="cad-acts"><button class="btn primary" id="cadg-add">+ Nova linha</button><label class="btn" for="cadg-file">Importar aba 3 (Excel)</label><input type="file" id="cadg-file" accept=".xlsx,.xls" hidden><button class="btn" id="cadg-xlsx">Baixar em Excel</button></div></div>
+        <div class="cad-acts"><button class="btn primary" id="cadg-add">+ Nova linha</button><label class="btn" for="cadg-file">Importar aba 3 (Excel)</label><input type="file" id="cadg-file" accept=".xlsx,.xls" hidden><button class="btn" id="cadg-sugs" hidden>Usar as sugestões</button><button class="btn" id="cadg-xlsx">Baixar em Excel</button></div></div>
       <p class="muted" id="cadg-origem" style="font-size:12px;margin:6px 0 0"></p>
       <p class="muted" style="font-size:12px;margin:4px 0 6px">Uma linha por gerente × departamento × empresa/obra, como na aba 3. “Todas” vale para todas as obras da empresa que têm insumo daquele departamento. <span id="cadg-n"></span></p>
       <div class="tbl-box cad-box"><table class="list" id="cadg-tbl"></table></div>
