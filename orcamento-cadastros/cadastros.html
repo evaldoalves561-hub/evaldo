@@ -1,0 +1,52 @@
+  <section id="v-cad" hidden>
+    <div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h2 style="margin:0">Cadastros do planejamento</h2>
+      <p class="desc" style="margin:4px 0 0">O que antes ficava na planilha CONFIGURAÇÃO agora é editado aqui: empresas e obras ativas, quem planeja cada insumo, gerentes por departamento e quem usa o aplicativo. Nada é gravado até você clicar em <b>Salvar</b>.</p></div></div>
+      <div class="subtabs" id="cad-sub" role="group" aria-label="Cadastros"><button type="button" data-cad="obras" aria-pressed="true">Empresas e obras</button><button type="button" data-cad="quem" aria-pressed="false">Quem planeja</button><button type="button" data-cad="ger" aria-pressed="false">Gerentes</button></div>
+      <p class="muted" id="cad-msg" style="margin:8px 0 0"></p></div>
+    <div id="cad-kpi" class="ind-kpis cad-kpis"></div>
+
+    <div class="card" id="cad-obras">
+      <div class="cad-fbar"><div><label class="lbl" for="co-q">Buscar</label><input type="search" id="co-q" placeholder="Código, obra, empresa ou Regional"></div>
+        <div><label class="lbl" for="co-emp">Empresa</label><select id="co-emp"><option value="">Todas as empresas</option></select></div>
+        <div><label class="lbl" for="co-st">Mostrar</label><select id="co-st"><option value="ativas">Ativas</option><option value="todas">Todas</option><option value="inativas">Inativas</option><option value="app">Planejam no app</option><option value="fora">Fora do app</option><option value="semger">Sem gerente em alguma área</option><option value="semreg">Sem Regional</option></select></div>
+        <span class="muted" id="co-n" style="align-self:end;font-size:12px"></span></div>
+      <div class="cad-selbar" id="co-selbar" hidden><b id="co-seln"></b>
+        <button class="btn sm" data-co-lote="ativar">Ativar</button><button class="btn sm" data-co-lote="inativar">Inativar</button>
+        <button class="btn sm" data-co-lote="app">Planejam no app</button><button class="btn sm" data-co-lote="fora">Fora do app</button>
+        <span class="row" style="gap:4px"><input id="co-lote-reg" list="cad-regs" placeholder="Regional" style="width:130px"><button class="btn sm" data-co-lote="reg">Definir Regional</button></span>
+        <button class="btn sm" data-co-lote="limpar">Desmarcar</button></div>
+      <datalist id="cad-regs"></datalist>
+      <p class="muted" style="font-size:12px;margin:6px 0">Clique em <span class="pill enviado">Ativa</span> ou <span class="pill validado">No app</span> para trocar. Áreas em vermelho não têm gerente. Para marcar só uma área como fora do app, use “Planejamento fora do aplicativo” em Gerentes e acessos.</p>
+      <div class="tbl-box cad-box"><table class="list" id="co-tbl"></table></div>
+      <details class="cad-nova"><summary>Incluir obra nova</summary>
+        <div class="cad-fbar" style="margin-top:8px"><div><label class="lbl" for="cn-emp">Cód. empresa</label><input id="cn-emp" style="width:90px"></div><div><label class="lbl" for="cn-empn">Nome da empresa</label><input id="cn-empn" placeholder="(se for empresa nova)"></div>
+          <div><label class="lbl" for="cn-obra">Cód. obra</label><input id="cn-obra" style="width:90px"></div><div><label class="lbl" for="cn-obran">Descrição da obra</label><input id="cn-obran"></div>
+          <div><label class="lbl" for="cn-base">Base modelo</label><input id="cn-base" style="width:90px"></div><div><label class="lbl" for="cn-reg">Regional</label><input id="cn-reg" list="cad-regs" style="width:120px"></div>
+          <button class="btn" id="cn-add" style="align-self:end">Incluir</button></div><p class="muted" id="cn-msg" style="font-size:12px"></p></details>
+    </div>
+
+    <div class="card" id="cad-quem" hidden>
+      <div class="cad-fbar"><div><label class="lbl" for="cq-base">Base modelo</label><select id="cq-base"></select></div>
+        <div><label class="lbl" for="cq-obra">Aplicar em</label><select id="cq-obra" style="max-width:320px"></select></div>
+        <div><label class="lbl" for="cq-area">Quem planeja</label><select id="cq-area"></select></div>
+        <div><label class="lbl" for="cq-q">Buscar insumo</label><input type="search" id="cq-q" placeholder="Código ou descrição"></div></div>
+      <p class="cad-res" id="cq-res"></p>
+      <div class="cad-selbar"><b>Trocar de uma vez</b><select id="cq-de"></select><span>→</span><select id="cq-para"></select><button class="btn sm" id="cq-trocar">Trocar</button><span class="muted" id="cq-msg" style="font-size:12px"></span></div>
+      <p class="muted" style="font-size:12px;margin:6px 0">Na regra da base, a mudança vale para todas as obras com essa base. Escolhendo uma obra em “Aplicar em”, a mudança vira exceção só daquela obra. <span id="cq-n"></span></p>
+      <div class="tbl-box cad-box"><table class="list" id="cq-tbl"></table></div>
+    </div>
+
+    <div class="card" id="cad-ger" hidden>
+      <div class="cad-fbar"><div><label class="lbl" for="cadg-q">Buscar</label><input type="search" id="cadg-q" placeholder="Nome, e-mail ou cargo"></div>
+        <div><label class="lbl" for="cadg-dep">Departamento</label><select id="cadg-dep"></select></div>
+        <div><label class="lbl" for="cadg-emp">Empresa</label><select id="cadg-emp"></select></div>
+        <label style="align-self:end;font-size:13px;display:flex;gap:4px;align-items:center"><input type="checkbox" id="cadg-pend"> Só com pendência</label>
+        <span style="flex:1"></span>
+        <div class="cad-acts"><button class="btn primary" id="cadg-add">+ Nova linha</button><label class="btn" for="cadg-file">Importar aba 3 (Excel)</label><input type="file" id="cadg-file" accept=".xlsx,.xls" hidden><button class="btn" id="cadg-xlsx">Baixar em Excel</button></div></div>
+      <p class="muted" id="cadg-origem" style="font-size:12px;margin:6px 0 0"></p>
+      <p class="muted" style="font-size:12px;margin:4px 0 6px">Uma linha por gerente × departamento × empresa/obra, como na aba 3. “Todas” vale para todas as obras da empresa que têm insumo daquele departamento. <span id="cadg-n"></span></p>
+      <div class="tbl-box cad-box"><table class="list" id="cadg-tbl"></table></div>
+    </div>
+
+    <div class="cad-save" id="cad-save" hidden><b id="cad-save-n"></b><span class="muted" id="cad-save-msg"></span><span style="flex:1"></span><button class="btn" id="cad-desc">Descartar</button><button class="btn primary" id="cad-salvar">Salvar</button></div>
+  </section>
