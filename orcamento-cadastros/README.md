@@ -61,3 +61,7 @@ A partir daqui os arquivos do módulo foram extraídos da versão que está no a
 ## 28/10 (3): modo passo a passo
 
 Botão **Começar passo a passo** na aba Pendências: mostra uma pendência por vez, com a sugestão preenchida, na ordem insumos sem modelo → obras novas (gerente esperando primeiro) → falta preencher → padronizar → acessos. Confirmar (ou Enter), Pular, Voltar ao que pulei, Sair. Usa as mesmas funções das listas, então nada é gravado até Salvar.
+
+## Suporte (28/10)
+
+`suporte.js`: botão **Suporte** para gerentes e masters (menos o responsável). O chamado grava em `gerentes/<uid>/suporte/<id>` com o contexto da tela e os últimos erros. A aba **Suporte** do responsável (`restrito/config.suporte.dono`) separa erro de código, acesso/cadastro e dúvida, e gera o texto para colar no Claude. Todo dia, a partir das 12:30, o responsável vê a **verificação do suporte** uma vez.
