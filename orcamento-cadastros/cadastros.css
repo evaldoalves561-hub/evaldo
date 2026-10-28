@@ -42,3 +42,11 @@ tr.cad-mud td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
 .cf-chip{border:0;cursor:pointer;font:inherit;font-size:11px}
 tr.cf-form td{background:var(--accent-soft)}
 @media (max-width:760px){.cp-grid,.cp-pessoas{grid-template-columns:minmax(0,1fr)}}
+.cp-ajuste{background:var(--bad-soft);color:var(--bad);border-radius:6px;padding:6px 10px;font-size:13px}
+.cp-req{border-color:var(--bad)!important}
+#pz-tbl mark{background:var(--warn-soft);color:var(--warn)}
+.cp-var{display:inline-flex;gap:6px;align-items:center;margin:0 10px 4px 0}
+.cp-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,.8fr)}
+.cad-h3{font-size:14px;margin:16px 0 6px}
+#cx-card[hidden]{display:none}
+#pz-sbox[hidden]{display:none}

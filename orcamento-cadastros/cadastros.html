@@ -18,6 +18,21 @@
           <span class="muted" id="cp-n" style="align-self:end;font-size:12px"></span></div>
         <div class="cad-selbar"><b>Para as obras listadas:</b><button class="btn sm" data-cp-lote="ok">Confirmar com as sugestões</button><button class="btn sm" data-cp-lote="pausa">Não planejar agora</button><span class="muted" style="font-size:12px">Use os filtros antes (ex.: grupo GERENCIAIS/INTERNAS → não planejar).</span></div>
         <div id="cp-list" class="cp-list"></div></div>
+      <div class="card" id="cx-card" hidden><h2>Insumos que não estão em nenhum modelo</h2>
+        <p class="desc">Esses insumos aparecem nas obras novas, mas não estão em nenhuma base modelo e nunca foram planejados em outra obra. Decida aqui uma vez e vale para todas as obras novas que têm o insumo. Se escolher “Ninguém planeja”, ele fica fora do app.</p>
+        <div class="cad-fbar"><div><label class="lbl" for="cx-q">Buscar</label><input id="cx-q" type="search" placeholder="código ou descrição"></div><label style="align-self:end;font-size:13px"><input type="checkbox" id="cx-falta" checked> só sem decisão</label><span class="muted" id="cx-n" style="align-self:end;font-size:12px"></span><span style="flex:1"></span><button class="btn" id="cx-ning" style="align-self:end">Os listados sem decisão: ninguém planeja</button></div>
+        <div class="tbl-box cad-box" style="max-height:45vh"><table class="list" id="cx-tbl"></table></div></div>
+      <div class="card"><h2>Padronizar nomes e Regionais</h2>
+        <p class="desc">Compara o nome da empresa, o nome da obra e a Regional do app com a Base da Estrutura (sem espaços repetidos). Os filtros do app usam esses nomes, então vale deixar tudo igual ao ERP.</p>
+        <div class="cad-fbar"><div><label class="lbl" for="pz-campo">Mostrar</label><select id="pz-campo"></select></div><span class="muted" id="pz-n" style="align-self:end;font-size:12px"></span><span style="flex:1"></span><button class="btn" id="pz-todos" style="align-self:end">Usar a da estrutura em todos os listados</button></div>
+        <p id="pz-var" class="cad-res"></p>
+        <div class="tbl-box cad-box" style="max-height:40vh"><table class="list" id="pz-tbl"></table></div>
+        <div id="pz-sbox" hidden><h3 class="cad-h3">Obras do app que não estão mais na Base da Estrutura</h3>
+        <div class="cad-fbar"><span class="muted" id="pz-sn" style="align-self:center;font-size:12px"></span><span style="flex:1"></span><button class="btn" id="pz-sinat">Inativar todas as listadas</button></div>
+        <div class="tbl-box cad-box" style="max-height:40vh"><table class="list" id="pz-stbl"></table></div></div>
+        <h3 class="cad-h3">Gerentes e e-mails</h3>
+        <div class="cad-fbar"><span class="muted" id="pz-pn" style="align-self:center;font-size:12px"></span><span style="flex:1"></span><button class="btn" id="pz-ptodos">Corrigir espaços, maiúsculas e nomes de todos</button></div>
+        <div class="tbl-box cad-box" style="max-height:40vh"><table class="list" id="pz-ptbl"></table></div></div>
       <div class="card"><h2>Falta preencher nas obras do app</h2>
         <p class="desc">Obras ativas que ainda não têm Gerente Administrativo, responsável pela Controladoria, Gerente Regional ou gerente em alguma área. Clique no que falta para preencher; dá para aplicar em todas as obras da empresa de uma vez.</p>
         <div class="cad-fbar"><div><label class="lbl" for="cf-o">O que falta</label><select id="cf-o"></select></div><div><label class="lbl" for="cf-emp">Empresa</label><select id="cf-emp"></select></div>

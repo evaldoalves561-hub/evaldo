@@ -38,3 +38,11 @@ Fluxo do dia a dia: subir só a **Base da Estrutura** (aba Base - Geral). Toda o
 - Regional (Grupo_Empresa da estrutura), Gerente Administrativo, responsável pela Controladoria e Gerente Regional: quem já faz isso na empresa, senão na Regional.
 
 “Confirmar” inclui a obra; “Não planejar agora” inclui como Pausada. A segunda parte da aba lista as obras do app sem Gerente Administrativo, Controladoria, Gerente Regional ou gerente em alguma área, com preenchimento por obra ou para a empresa toda.
+
+## Padronizar e ajustes pedidos na aba Pendências
+
+- **Insumos que não estão em nenhum modelo**: decide uma vez por insumo (vale para todas as obras novas). Sugestão pelo mesmo insumo em outros modelos/exceções, senão pelo mesmo serviço. "Ninguém planeja" deixa o insumo fora do app. A obra nova só é confirmada quando base, Regional e esses insumos estão resolvidos; as escolhas viram exceções por obra (`regras/depara` o).
+- **Padronizar nomes e Regionais**: compara empresa, obra e Regional do catálogo com a Base da Estrutura (espaços repetidos removidos) e agrupa Regionais escritas de formas diferentes.
+- **Obras do app que não estão mais na estrutura**: lista e permite inativar, mostrando em quais empresas a mesma obra aparece.
+- **Gerentes e e-mails**: e-mail com espaço/maiúscula, mesmo e-mail com nomes diferentes, mesma pessoa com mais de um e-mail.
+- Ao salvar gerentes, a Regional já gravada da obra não é mais sobrescrita pela coluna Regional das linhas de gerente.
