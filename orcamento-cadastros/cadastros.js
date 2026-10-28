@@ -406,7 +406,7 @@ function cadRenderPend(){const C=S.cad;const sr=$("#cp-reg"),sg=$("#cp-grupo");c
     ${ab?`<div class="tbl-box"><table class="list cp-tab"><thead><tr><th>Obra</th><th>Descrição</th><th>Base</th><th>Gerente Adm.</th><th>Controladoria</th><th>Gerente Regional</th><th>Regional</th><th>Situação</th><th></th></tr></thead><tbody>${L.map(row).join("")}</tbody></table></div>`:""}</section>`}).join(""):`<p class="muted">${P.length?"Nenhuma obra com esses filtros.":"Nenhuma obra nova. Suba a Base da Estrutura quando ela mudar."}</p>`;
   cadRenderResolvidas();
   {const regs=[...new Set(Object.values(S.regObra||{}).concat([...C.reg.values()],P.map(p=>p.reg)).filter(Boolean))].sort();$("#cad-regs").innerHTML=regs.map(x=>`<option value="${esc(x)}">`).join("")}
-  cadRenderFalta(ag.length,sb.length,ok.length,pa.length);cadRenderExtras();cadRenderPadrao();cadAcessosCalc();cadRenderAcessos();cadRenderPq();cadBarra();cadTabPend()}
+  cadRenderFalta(ag.length,sb.length,ok.length,pa.length);cadRenderExtras();cadRenderPadrao();cadAcessosCalc();cadRenderAcessos();cadRenderPq();cadBarra();cadTabPend();if(C.passo)cadPassoRender()}
 /* ---------- insumos fora de qualquer modelo: decide uma vez por insumo para todas as obras novas ---------- */
 const cadOptsExt=(v,AR)=>cadOpts([[CAD_NING,"Ninguém planeja (fica fora do app)"]].concat((AR||cadAreas()).map(a=>[a,a])),v,"— escolher —");/* AR: lista de áreas já calculada (desempenho) */
 function cadExtrasGlobais(){const M=new Map();(S.cad.pend?[...S.cad.pend.values()]:[]).forEach(p=>{if(p.st==="pausa")return;p.extras.forEach(x=>{if(x.sug)return;const k=x.S+"|"+x.I;const g=M.get(k)||{k,S:x.S,I:x.I,sd:x.sd,d:x.d,n:0,falta:0};g.n++;if(!x.area)g.falta++;M.set(k,g)})});return [...M.values()].sort((a,b)=>b.n-a.n)}
@@ -510,7 +510,7 @@ function cadPqContas(){const C=S.cad;const P=[...(C.pend||new Map()).values()];c
 function cadRenderPq(){const C=S.cad;const box=$("#pq-tiles");if(!box)return;const K=cadPqContas();
   if(!C.pq||!K[C.pq]){const prim=CAD_PQ.find(([k])=>K[k][0]>0&&k!=="padrao");C.pq=prim?prim[0]:"novas"}
   box.innerHTML=CAD_PQ.map(([k,l])=>{const [n,sub,cls]=K[k];return `<button type="button" role="tab" class="pq-tile ${cls}" data-pq-tile="${k}" aria-selected="${C.pq===k}"><span class="k-l">${l}</span><span class="k-v">${n?cadN(n):"✓"}</span><span class="k-s">${esc(sub)}</span></button>`}).join("");
-  document.querySelectorAll("#cad-pend [data-pq]").forEach(el=>{el.hidden=el.dataset.pq!==C.pq})}
+  if(C.passo)return;document.querySelectorAll("#cad-pend [data-pq]").forEach(el=>{el.hidden=el.dataset.pq!==C.pq})}
 /* gerentes do cadastro que já apontam para a obra nova (ela só entra no app depois de confirmada) */
 function cadGerEspera(p){const C=S.cad;if(!C.ger)return [];if(!C._gerIdx||C._gerIdxRef!==C.ger||C._gerIdxN!==C.ger.length){const M=new Map();C.ger.forEach(r=>{if(!cadValido(r.email)||!r.dep)return;const k=String(r.emp).trim()+"|"+(cadTodas(r.obra)?"*":String(r.obra).trim());if(!M.has(k))M.set(k,[]);M.get(k).push(r)});C._gerIdx=M;C._gerIdxRef=C.ger;C._gerIdxN=C.ger.length}
   return (C._gerIdx.get(p.e+"|"+p.o)||[]).concat((C._gerIdx.get(p.e+"|*")||[]).filter(r=>(p.areas||{})[r.dep]))}
@@ -547,11 +547,84 @@ async function cadGerSyncForm(modo,x){try{const d=await S.db.doc("restrito/cad_g
     else if(modo==="del"){const [e,o]=sp(x.id);L=L.filter(r=>!(mesmo(r)&&String(r.emp)===e&&String(r.obra)===o))}
     await S.db.doc("restrito/cad_gerentes").set({...dd,linhas:L,atualizadoEm:nowISO(),por:"formulário"});
     if(S.cad&&!S.cad.gerDirty){S.cad.ger=null;S.cad.gerBase=null;S.cad._ger0=0}}catch(e){console.warn("cad_gerentes:",e)}}
+/* ---------- 28/10 (3): modo passo a passo — uma pendência por vez, com a sugestão já preenchida ---------- */
+const CAD_PP=[["ins","Insumos sem modelo"],["nova","Obras novas"],["falta","Falta preencher"],["padrao","Padronizar"],["acesso","Acessos"]];
+function cadPassoFila(){const C=S.cad;const L=[];const pu=C.ppPul||new Set();
+  cadExtrasGlobais().filter(g=>g.falta).forEach(g=>L.push({t:"ins",k:"ins|"+g.k,g}));
+  [...(C.pend||new Map()).values()].filter(p=>!p.st).sort((a,b)=>((cadGerEspera(b).length?1:0)-(cadGerEspera(a).length?1:0))||cadNum(a.id,b.id)).forEach(p=>L.push({t:"nova",k:"nova|"+p.id,p}));
+  (C.faltas||[]).forEach(x=>x.falta.forEach(d=>L.push({t:"falta",k:"falta|"+x.id+"|"+d,x,d})));
+  (C.difs||[]).forEach(d=>L.push({t:"padrao",s:"dif",k:"dif|"+d.c[0]+"|"+d.campo,d}));(C.sumidas||[]).filter(x=>!x.inat).forEach(x=>L.push({t:"padrao",s:"sum",k:"sum|"+x.c[0],x}));(C.pzPes||[]).filter(d=>d.campo).forEach(d=>L.push({t:"padrao",s:"pes",k:"pes|"+d.tipo+"|"+d.de,d}));
+  const A=C.acessos||{faltam:[],legado:[],semItens:[]};if(A.faltam.length+A.legado.length&&!C.paAcertar)L.push({t:"acesso",s:"acertar",k:"acertar",A});(A.semItens||[]).forEach(x=>L.push({t:"acesso",s:"si",k:"si|"+x.email+"|"+x.id+"|"+x.d,x}));
+  return {todos:L,abertos:L.filter(i=>!pu.has(i.k))}}
+function cadPassoIniciar(){const C=S.cad;C.passo=true;C.ppPul=new Set();C.ppHist=[];C.ppFeitos=0;cadPassoRender()}
+function cadPassoSair(){S.cad.passo=false;$("#pp-box").hidden=true;cadRenderPq();$("#pq-tiles").scrollIntoView({block:"nearest"})}
+function cadPassoRender(){const C=S.cad;const box=$("#pp-box");if(!C.passo){box.hidden=true;return}box.hidden=false;
+  document.querySelectorAll("#cad-pend [data-pq]").forEach(el=>el.hidden=true);
+  const {todos,abertos}=cadPassoFila();const it=abertos[0];C.ppAtual=it||null;const feitos=C.ppFeitos||0;const tot=feitos+todos.length;const pct=tot?Math.round(100*feitos/tot):100;
+  const et=CAD_PP.map(([k,l])=>{const n=todos.filter(i=>i.t===k).length;return `<span class="${it&&it.t===k?"on":n?"":"ok"}">${l}${n?` · ${cadN(n)}`:" ✓"}</span>`}).join("");
+  const topo=`<div class="pp-top"><div class="pp-et">${et}</div><div class="cad-acts">${(C.ppHist||[]).length?'<button class="btn sm" id="pp-voltar">← Voltar ao que pulei</button>':""}<button class="btn sm" id="pp-sair">Sair do passo a passo</button></div></div>
+    <div class="pp-bar" title="${pct}%"><i style="width:${pct}%"></i></div><p class="muted" style="font-size:12px;margin:-6px 0 8px">${cadN(feitos)} resolvida(s) agora · ${cadN(abertos.length)} na fila${C.ppPul.size?` · ${cadN(C.ppPul.size)} pulada(s)`:""}${cadSujo()?' · lembre de clicar em <b>Salvar</b> no fim':""}</p>`;
+  if(!it){box.innerHTML=topo+`<p class="pp-tit">${todos.length?"Você passou por todas":"Tudo resolvido"} 🎉</p><p class="pp-sub">${todos.length?`Ficaram ${cadN(todos.length)} pendência(s) puladas. Clique em “Voltar ao que pulei” para revê-las.`:"Não há mais pendências."} Clique em <b>Salvar</b> para gravar o que foi feito.</p><div class="pp-acts">${C.ppPul.size?'<button class="btn" id="pp-rever">Rever as puladas</button>':""}<button class="btn" id="pp-sair2">Voltar para os quadros</button></div>`;return}
+  const ar=cadAreas();const nm=id=>{const c=S.catMap.get(id)||cadObraDe(id);return c?`${c[7]||""} · ${c[2]||""}`:""};let h="";
+  if(it.t==="ins"){const g=it.g;h=`<p class="pp-tit">Quem planeja este insumo?</p><p class="pp-sub">Ele não está em nenhuma base modelo e aparece em <b>${cadN(g.n)}</b> obra(s) nova(s). A escolha vale para todas elas.</p>
+    <div class="pp-grid"><div><span class="lbl">Serviço</span><div><span class="cad-cod">${esc(g.S)}</span> ${esc(g.sd)}</div></div><div><span class="lbl">Insumo</span><div><span class="cad-cod">${esc(g.I||"—")}</span> ${esc(g.d)}</div></div>
+    <div><label class="lbl" for="pp-area">Quem planeja</label><select class="cad-in" id="pp-area">${cadOptsExt("",ar)}</select><small class="cp-src">Itens financeiros (AFAC, lucros, empréstimos, aportes) normalmente ficam em “Ninguém planeja”.</small></div></div>
+    <div class="pp-acts"><button class="btn primary" id="pp-ok">Confirmar</button><button class="btn" id="pp-pular">Pular</button></div>`}
+  else if(it.t==="nova"){const p=it.p;const bl=cadPendBloqueio(p);const ge=[...new Set(cadGerEspera(p).map(r=>r.nome||r.email))];const bases=Object.keys(T.tipos||{}).sort(cadNum);const rp=(d,k)=>esc(((p.resp[d]||{})[k])||"");
+    const A=Object.entries(p.areas).sort((a,b)=>b[1]-a[1]);
+    h=`<p class="pp-tit"><span class="cad-cod">${esc(p.id)}</span> ${esc(p.on)}</p><p class="pp-sub">${esc(p.en)} · ${esc(p.grupo||"sem grupo")} · ${cadN(p.linhas)} linhas na estrutura${ge.length?` · <span class="cad-chip cp-gerchip">Gerente esperando: ${esc(ge.join(", "))}</span>`:""}</p>
+    <div class="pp-grid"><div><label class="lbl" for="pp-base">Base modelo</label><select class="cad-in" id="pp-base">${cadOpts([["__erp","Sem base modelo (só a estrutura do ERP)"]].concat(bases.map(b=>[b,`${b}${T.tipos[b]&&T.tipos[b].prods?" · "+Object.values(T.tipos[b].prods)[0]:""}`])),p.semBase?"__erp":p.base,"— escolher —")}</select><small class="cp-src${p.base||p.semBase?"":" falta"}">${p.base?`sugestão: ${esc(p.motivo)}${p.parecido!=null?` · ${p.parecido}% dos insumos no modelo`:""}`:p.semBase?"sem base modelo":"não encontrei base parecida, escolha"}</small></div>
+      <div><label class="lbl" for="pp-reg">Regional</label><input class="cad-in" id="pp-reg" list="cad-regs" value="${esc(p.reg)}"><small class="cp-src${p.reg?"":" falta"}">${p.reg?"pela Base da Estrutura":"a estrutura não informa, preencha"}</small></div>
+      <div><span class="lbl">Gerente Administrativo</span><input class="cad-in" id="pp-ga-n" value="${rp(CAD_GA,"nome")}" placeholder="Nome"><input class="cad-in" id="pp-ga-e" value="${rp(CAD_GA,"email")}" placeholder="e-mail"></div>
+      <div><span class="lbl">Responsável Controladoria</span><input class="cad-in" id="pp-ct-n" value="${rp(CAD_CTRL,"nome")}" placeholder="Nome"><input class="cad-in" id="pp-ct-e" value="${rp(CAD_CTRL,"email")}" placeholder="e-mail"></div>
+      <div><span class="lbl">Gerente Regional</span><input class="cad-in" id="pp-gr-n" value="${rp("_reg","nome")}" placeholder="Nome"><input class="cad-in" id="pp-gr-e" value="${rp("_reg","email")}" placeholder="e-mail"></div>
+      <div><span class="lbl">Quem planeja (replicado do modelo)</span><div>${A.map(([d,n])=>`<span class="cad-chip">${esc(d)} <b>${n}</b></span>`).join("")||'<span class="muted">escolha a base</span>'}</div>${p.semArea?`<small class="cp-src falta">${p.semArea} insumo(s) sem quem planeja: abra a obra nos quadros para decidir</small>`:""}</div></div>
+    ${bl.length?`<div class="cp-ajuste" style="margin-top:10px"><b>Falta para confirmar:</b> ${bl.map(esc).join(" · ")}</div>`:""}
+    <div class="pp-acts"><button class="btn primary" id="pp-ok">Confirmar obra</button><button class="btn" id="pp-pausa">Não planejar agora</button><button class="btn" id="pp-pular">Pular</button><small class="muted">Os outros departamentos ficam com as sugestões do app.</small></div>`}
+  else if(it.t==="falta"){const x=it.x,d=it.d,e=String(x.c[6]);const nE=(C.faltas||[]).filter(y=>String(y.c[6])===e&&y.falta.includes(d)).length;
+    const s2=d==="_regnome"?{nome:x.regSug||"",fonte:x.regSug?"pela estrutura do ERP":""}:d==="_reg"?cadSugRegional(e,x.reg||x.regSug):cadSugPessoa(d,e,x.reg||x.regSug);
+    h=`<p class="pp-tit">Falta ${esc(cadFaltaRot(d))}</p><p class="pp-sub"><span class="cad-cod">${esc(x.id)}</span> ${esc(nm(x.id))} · Regional ${esc(x.reg||"—")}</p>
+    <div class="pp-grid">${d==="_regnome"?`<div><label class="lbl" for="pp-n">Regional</label><input class="cad-in" id="pp-n" list="cad-regs" value="${esc(s2.nome)}"></div>`:`<div><label class="lbl" for="pp-n">Nome</label><input class="cad-in" id="pp-n" value="${esc(s2.nome||"")}"></div><div><label class="lbl" for="pp-e">E-mail</label><input class="cad-in" id="pp-e" value="${esc(s2.email||"")}"></div>`}
+      <div><span class="lbl">Vale para</span><label><input type="radio" name="pp-alc" value="obra" checked> só esta obra</label><label><input type="radio" name="pp-alc" value="emp"> ${d==="_regnome"?`as ${nE} obra(s) da empresa ${esc(e)} sem Regional`:`todas as obras da empresa ${esc(e)} (${nE} com essa falta)`}</label></div></div>
+    ${s2.fonte?`<small class="cp-src">sugestão: ${esc(s2.fonte)}</small>`:""}
+    <div class="pp-acts"><button class="btn primary" id="pp-ok">Confirmar</button><button class="btn" id="pp-pular">Pular</button></div>`}
+  else if(it.t==="padrao"&&it.s==="dif"){const d=it.d;h=`<p class="pp-tit">${esc(d.rot)} diferente da estrutura</p><p class="pp-sub"><span class="cad-cod">${esc(d.c[0])}</span></p>
+    <div class="pp-cmp"><div><span class="lbl">No app hoje</span><div>${d.app?esc(d.app):'<span class="muted">vazio</span>'}</div></div><div><span class="lbl">Na Base da Estrutura</span><div><b>${esc(d.est)}</b></div></div></div>
+    <div class="pp-acts"><button class="btn primary" id="pp-ok">Usar a da estrutura</button><button class="btn" id="pp-pular">Manter como está</button></div>`}
+  else if(it.t==="padrao"&&it.s==="sum"){const x=it.x;h=`<p class="pp-tit">Obra que não está mais na estrutura</p><p class="pp-sub"><span class="cad-cod">${esc(x.c[0])}</span> ${esc([x.c[7],x.c[2]].filter(Boolean).join(" · ")||"sem nome")} · hoje está <b>ativa</b> e entra nos Indicadores</p>
+    ${x.outras.length?`<p style="font-size:13px">A mesma obra aparece na estrutura em: ${x.outras.slice(0,5).map(([id,en,on])=>`<span class="cad-chip">${esc(id)} ${esc(en)}</span>`).join("")}</p>`:""}
+    <div class="pp-acts"><button class="btn primary" id="pp-ok">Inativar</button><button class="btn" id="pp-pular">Manter ativa</button></div>`}
+  else if(it.t==="padrao"&&it.s==="pes"){const d=it.d;h=`<p class="pp-tit">${esc(d.tipo)}</p><p class="pp-sub">${cadN(d.refs.length)} linha(s) de gerente</p>
+    <div class="pp-cmp"><div><span class="lbl">Hoje</span><div>${d.campo==="m"?`<b>${esc(d.nome)}</b><br>`:""}${esc(d.de)}</div></div><div><span class="lbl">Correção</span><div>${d.campo==="m"?`<select class="cad-in" id="pp-m">${d.ops.map(o=>`<option>${esc(o)}</option>`).join("")}</select>`:`<b>${esc(d.para)}</b>`}</div></div></div>
+    <div class="pp-acts"><button class="btn primary" id="pp-ok">${d.campo==="m"?"Usar este e-mail":"Corrigir"}</button><button class="btn" id="pp-pular">Pular</button></div>`}
+  else if(it.t==="acesso"&&it.s==="acertar"){const A=it.A;h=`<p class="pp-tit">Acertar os acessos dos gerentes</p><p class="pp-sub">${cadN(A.faltam.length)} acesso(s) de gerentes cadastrados ainda não liberados e ${cadN(A.legado.length)} liberado(s) por fora do cadastro.</p>
+    <p style="font-size:13px">Ao confirmar, o que foi dado por fora entra no cadastro de gerentes e, ao Salvar, todos passam a ver as obras deles.</p>
+    <div class="pp-acts"><button class="btn primary" id="pp-ok">Acertar acessos</button><button class="btn" id="pp-pular">Pular</button></div>`}
+  else if(it.t==="acesso"&&it.s==="si"){const x=it.x;h=`<p class="pp-tit">${esc(x.nome||x.email)} não vê a obra ${esc(x.id)}</p><p class="pp-sub">Cadastrada como <b>${esc(x.d)}</b> em ${esc(nm(x.id))}, mas nenhum insumo da obra é dessa área. Áreas da obra hoje: ${((S.areasObra||{})[x.id]||[]).map(esc).join(", ")||"nenhuma"}.</p>
+    <div class="pp-acts"><button class="btn primary" id="pp-quem">Abrir quem planeja da obra</button><button class="btn" id="pp-pular">Pular</button></div>`}
+  box.innerHTML=topo+h;const f=box.querySelector("select,input:not([type=radio])");if(f&&it.t!=="padrao")f.focus()}
+function cadPassoOk(modo){const C=S.cad;const it=C.ppAtual;if(!it)return;const v=id=>(($("#"+id)||{}).value||"").trim();let feito=true;
+  if(it.t==="ins"){const a=v("pp-area");if(!a){toast("Escolha quem planeja ou “Ninguém planeja”.");return}cadDecidir([it.g.k],a)}
+  else if(it.t==="nova"){const p=it.p;const b=v("pp-base");if(b!==(p.semBase?"__erp":p.base)){p.semBase=b==="__erp";p.base=p.semBase?"":b;p.motivo="escolhida por você";cadPendCalc(p)}p.reg=cadLimpo(v("pp-reg"));
+    for(const [d,n,e] of [[CAD_GA,"pp-ga-n","pp-ga-e"],[CAD_CTRL,"pp-ct-n","pp-ct-e"],["_reg","pp-gr-n","pp-gr-e"]]){const nome=v(n),email=v(e).toLowerCase();if(email&&!cadValido(email)){toast("E-mail inválido: "+email);return}const cur=p.resp[d]||{};if(nome!==(cur.nome||"")||email!==(cur.email||""))p.resp[d]={...cur,nome,email,mexeu:true}}
+    if(!cadPendAplicar(p,modo==="pausa"?"pausa":"ok")){cadPassoRender();return}}
+  else if(it.t==="falta"){const x=it.x,d=it.d;if(d==="_regnome"?!v("pp-n"):!cadValido(v("pp-e"))){toast(d==="_regnome"?"Informe a Regional.":"Informe um e-mail válido.");return}C.cfAberto={id:x.id,d};const alc=(document.querySelector('input[name="pp-alc"]:checked')||{}).value;
+    const tmp=document.createElement("div");tmp.hidden=true;tmp.innerHTML=`<input id="cf-v-nome"><input id="cf-v-email"><input type="radio" name="cf-alc" value="${alc}" checked>`;document.body.appendChild(tmp);
+    tmp.querySelector("#cf-v-nome").value=v("pp-n");tmp.querySelector("#cf-v-email").value=v("pp-e");try{cadFaltaAplicar()}finally{tmp.remove()}}
+  else if(it.s==="dif")cadUsarEst(it.d);else if(it.s==="sum")cadSetInat(it.x.c[0],true);else if(it.s==="pes")cadUsarPes(it.d,v("pp-m"));
+  else if(it.s==="acertar"){cadAcertarAcessos()}
+  if(feito)C.ppFeitos=(C.ppFeitos||0)+1;cadRenderPend()}
+function cadPassoPular(){const C=S.cad;const it=C.ppAtual;if(!it)return;C.ppPul.add(it.k);C.ppHist.push(it.k);cadPassoRender()}
 function cadTabPend(){const t=$("#tab-pend");if(!t||!S.cad||!S.cad.pend)return;const n=[...S.cad.pend.values()].filter(p=>!p.st).length+((S.cad.faltas||[]).length?1:0);
   t.textContent=n?`Pendências (${[...S.cad.pend.values()].filter(p=>!p.st).length} novas)`:"Pendências"}
 document.addEventListener("click",e=>{const t=e.target;if(!t.closest||!t.closest("#cad-pend")||!S.cad)return;const C=S.cad;const P=id=>C.pend&&C.pend.get(id);
   {const tl=t.closest("[data-pq-tile]");if(tl){C.pq=tl.dataset.pqTile;cadRenderPq();return}}
   if(t.id==="pa-acertar"){cadAcertarAcessos();return}
+  if(t.id==="pp-iniciar"){cadPassoIniciar();$("#pp-box").scrollIntoView({block:"start"});return}
+  if(t.id==="pp-sair"||t.id==="pp-sair2"){cadPassoSair();return}
+  if(t.id==="pp-ok"){cadPassoOk();return}if(t.id==="pp-pausa"){cadPassoOk("pausa");return}if(t.id==="pp-pular"){cadPassoPular();return}
+  if(t.id==="pp-voltar"){const k=C.ppHist.pop();if(k)C.ppPul.delete(k);cadPassoRender();return}if(t.id==="pp-rever"){C.ppPul.clear();C.ppHist=[];cadPassoRender();return}
+  if(t.id==="pp-quem"){const id=C.ppAtual&&C.ppAtual.x.id;C.ppPul.add(C.ppAtual.k);cadPassoSair();const c=cadObraDe(id);cadMostrar("quem");if(c){$("#cq-base").value=c[3];cadQuemPrep();$("#cq-obra").value=id;cadRenderQuem()}return}
   {const qb=t.closest("[data-pa-quem]");if(qb){const id=qb.dataset.paQuem;const c=cadObraDe(id);cadMostrar("quem");if(c){const sb=$("#cq-base");sb.value=c[3];cadQuemPrep();const so=$("#cq-obra");so.value=id;cadRenderQuem()}return}}
   let b=t.closest("[data-cp-emp]");if(b){const e2=b.dataset.cpEmp;C.cpEmpAb=C.cpEmpAb||new Set();C.cpEmpAb.has(e2)?C.cpEmpAb.delete(e2):C.cpEmpAb.add(e2);cadRenderPend();return}
   b=t.closest("[data-cp-abrir]");if(b){const id=b.dataset.cpAbrir;C.cpAberta=C.cpAberta===id?null:id;if(C.cpEscopo&&C.cpEscopo.id!==C.cpAberta)C.cpEscopo=null;cadRenderPend();return}
@@ -585,6 +658,7 @@ document.addEventListener("change",e=>{const t=e.target;if(!t.closest||!t.closes
   if(t.dataset.cpPes){const [id,d]=t.dataset.cpPes.split("|");const p=C.pend.get(id);if(!p)return;const r=p.resp[d]=p.resp[d]||{};r[t.dataset.f]=t.value.trim();r.mexeu=true;if(p.st)cadPendAplicar(p,p.st);C.cpEscopo=cadEscIrmas(p).length?{id:p.id,d}:null;cadRenderPend();return}
   if(["cp-reg","cp-grupo","cp-st","cf-o","cf-emp","pz-campo"].includes(t.id)){cadRenderPend();return}});
 document.addEventListener("click",e=>{const h=e.target.closest&&e.target.closest("#cad-pend h2.cad-col-h");if(h)h.parentElement.classList.toggle("fechado")});
+document.addEventListener("keydown",e=>{if(e.key!=="Enter"||!S.cad||!S.cad.passo||!e.target.closest||!e.target.closest("#pp-box"))return;if(e.target.tagName==="BUTTON")return;e.preventDefault();cadPassoOk()});
 document.addEventListener("input",e=>{const t=e.target;if((t.id==="cp-q"||t.id==="cf-q")&&S.cad)cadRenderPend();if(t.id==="cx-q"&&S.cad)cadRenderExtras()});
 {const tp=$("#tab-pend");if(tp)tp.addEventListener("click",async()=>{await flush();S.cad=S.cad||cadNovo();S.cad.aba="pend";if(S.tab==="cad")cadMostrar("pend");else showTab("cad")})}
 

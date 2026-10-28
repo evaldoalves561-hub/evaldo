@@ -57,3 +57,7 @@ A partir daqui os arquivos do módulo foram extraídos da versão que está no a
 - Formulários antigos de gerente (Gerentes e acessos / Sem gerente) também gravam em `restrito/cad_gerentes` e não apagam mais os outros departamentos da pessoa.
 - **Base da Estrutura** também inativa as obras do app que saíram da estrutura ou estão com todas as linhas inativas no ERP (Pausada não muda).
 - **Indicadores** mostram quantas obras entram na conta e quantas ficaram fora (inativas, pausadas, fora do app).
+
+## 28/10 (3): modo passo a passo
+
+Botão **Começar passo a passo** na aba Pendências: mostra uma pendência por vez, com a sugestão preenchida, na ordem insumos sem modelo → obras novas (gerente esperando primeiro) → falta preencher → padronizar → acessos. Confirmar (ou Enter), Pular, Voltar ao que pulei, Sair. Usa as mesmas funções das listas, então nada é gravado até Salvar.

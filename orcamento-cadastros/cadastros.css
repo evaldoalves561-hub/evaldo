@@ -67,7 +67,18 @@ tr.cp-row-ab td{background:var(--accent-soft)}tr.cp-det>td{padding:6px 0 10px!im
 .pq-tile .k-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
 .pq-tile .k-v{font-family:var(--f-mono);font-size:21px}.pq-tile .k-s{font-size:12px;color:var(--muted);line-height:1.35}
 .pq-tile.bad .k-v{color:var(--bad)}.pq-tile.warn .k-v{color:var(--warn)}.pq-tile.ok .k-v{color:var(--good)}
-#cad-pend [data-pq][hidden],#cad-kpi[hidden]{display:none}
+#cad-pend [data-pq][hidden],#cad-kpi[hidden],#pp-box[hidden]{display:none}
+.pq-xls{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 12px;border:1px dashed var(--line-strong);border-radius:8px;font-size:13px}
+.pp-box{border-left:4px solid var(--accent)}
+.pp-top{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between}
+.pp-bar{height:6px;background:var(--line);border-radius:999px;overflow:hidden;margin:8px 0 12px}.pp-bar>i{display:block;height:100%;background:var(--accent)}
+.pp-et{display:flex;flex-wrap:wrap;gap:4px}.pp-et span{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--group);color:var(--muted)}.pp-et span.on{background:var(--accent);color:#fff}.pp-et span.ok{background:var(--good-soft,#E3F1E7);color:var(--good)}
+.pp-tit{font-size:18px;font-weight:600;margin:0}.pp-sub{color:var(--muted);font-size:13px;margin:2px 0 10px}
+.pp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}.pp-grid>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.pp-grid .cad-in{font-size:14px!important;padding:6px 8px!important}
+.pp-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}.pp-acts .btn.primary{font-size:15px;padding:8px 18px}
+.pp-cmp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.pp-cmp>div{border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+@media (max-width:760px){.pp-grid,.pp-cmp{grid-template-columns:minmax(0,1fr)}}
 .cp-gerchip{background:#DCE8F5;color:#1D4E89}
 @media (max-width:760px){.pq-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .cad-col>h2.cad-col-h{cursor:pointer;user-select:none}.cad-col>h2.cad-col-h::before{content:"▾ ";color:var(--muted)}
