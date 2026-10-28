@@ -28,3 +28,13 @@ python aplicar.py caminho/do/index.html
 ```
 
 Gera `index_cadastros.html` ao lado do original (que não é alterado). Publique esse arquivo no lugar do `index.html`, junto com `config.js` e `supabase-adapter.js` de sempre.
+
+## Pendências (aba própria)
+
+Fluxo do dia a dia: subir só a **Base da Estrutura** (aba Base - Geral). Toda obra que está na estrutura e ainda não está no app aparece em **Pendências** com sugestões para confirmar:
+
+- Base modelo: 1º a base da mesma obra em outras empresas, 2º a base mais usada no mesmo grupo da obra, 3º a base com estrutura mais parecida. Nas bases atuais esse critério acertou 99,5% e 92% das obras que já tinham base.
+- Quem planeja: regra da base para os serviço/insumo da obra; o que não está no modelo vai para a área mais comum daquele serviço/insumo.
+- Regional (Grupo_Empresa da estrutura), Gerente Administrativo, responsável pela Controladoria e Gerente Regional: quem já faz isso na empresa, senão na Regional.
+
+“Confirmar” inclui a obra; “Não planejar agora” inclui como Pausada. A segunda parte da aba lista as obras do app sem Gerente Administrativo, Controladoria, Gerente Regional ou gerente em alguma área, com preenchimento por obra ou para a empresa toda.

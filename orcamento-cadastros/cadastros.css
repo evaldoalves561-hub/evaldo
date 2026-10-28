@@ -27,3 +27,18 @@ tr.cad-mud td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
 .cad-imp{border-left:4px solid var(--accent)}
 .cad-imp-res{margin-top:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:13px;line-height:1.6}
 .cad-sug{font-size:11px;color:var(--accent);margin-top:2px;white-space:nowrap}
+.cp-list{display:grid;gap:10px;margin-top:10px}
+.cp-card{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:10px 12px;background:var(--surface);display:grid;gap:8px;min-width:0}
+.cp-card.cp-ok{border-left-color:var(--good)}.cp-card.cp-pausa{border-left-color:var(--line-strong);opacity:.8}
+.cp-card header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 12px}
+.cp-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start}
+.cp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:12px}
+.cp-grid>div,.cp-pes{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cp-pessoas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
+.cp-pes.falta input[data-f="email"]{border-color:var(--bad)!important}
+.cp-src{font-size:11px;color:var(--accent)}.cp-src.falta{color:var(--bad)}
+.cp-mais summary{cursor:pointer;font-size:12px;color:var(--muted)}.cp-mais .cp-pessoas{margin-top:6px}
+.cp-card footer{display:flex;gap:6px}
+.cf-chip{border:0;cursor:pointer;font:inherit;font-size:11px}
+tr.cf-form td{background:var(--accent-soft)}
+@media (max-width:760px){.cp-grid,.cp-pessoas{grid-template-columns:minmax(0,1fr)}}
