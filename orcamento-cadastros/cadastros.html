@@ -1,4 +1,4 @@
-  <section id="v-cad" hidden>
+<section id="v-cad" hidden>
     <div class="card"><div class="row" style="justify-content:space-between;align-items:flex-start;gap:8px"><div><h2 style="margin:0">Cadastros do planejamento</h2>
       <p class="desc" style="margin:4px 0 0">O que antes ficava na planilha CONFIGURAÇÃO agora é editado aqui: empresas e obras ativas, quem planeja cada insumo, gerentes por departamento e quem usa o aplicativo. Nada é gravado até você clicar em <b>Salvar</b>.</p></div></div>
       <div class="subtabs" id="cad-sub" role="group" aria-label="Cadastros"><button type="button" data-cad="pend" aria-pressed="true">Pendências</button><button type="button" data-cad="obras" aria-pressed="false">Empresas e obras</button><button type="button" data-cad="quem" aria-pressed="false">Quem planeja</button><button type="button" data-cad="ger" aria-pressed="false">Gerentes</button></div>
@@ -6,23 +6,36 @@
     <div id="cad-kpi" class="ind-kpis cad-kpis"></div>
 
     <div id="cad-pend" hidden>
-      <div class="card cad-imp"><div class="row" style="justify-content:space-between;gap:8px;align-items:center"><div><h2 style="margin:0;font-size:16px">Subir a Base da Estrutura</h2>
+      <div class="card cad-imp"><div class="row" style="justify-content:space-between;gap:8px;align-items:center"><div><h2 style="margin:0;font-size:16px"><span class="pq-num">1</span> Subir a Base da Estrutura</h2>
         <p class="desc" style="margin:2px 0 0">Suba a <b>Base da Estrutura</b> do ERP (aba Base - Geral). Se quiser, junto vai a planilha de obras com a situação (ativa/inativa). Toda obra que ainda não está no app aparece abaixo com a base modelo, quem planeja e os responsáveis sugeridos, para você confirmar. O que já está cadastrado não muda.</p></div>
         <label class="btn primary" for="cad-imp-file" style="white-space:nowrap">Escolher arquivo(s)</label><input type="file" id="cad-imp-file" accept=".xlsx,.xls,.xlsb" multiple hidden></div>
         <div class="cad-imp-res" id="cad-imp-res" hidden></div></div>
-      <div class="card"><h2>Obras novas para confirmar</h2>
+      <div class="card pq-head"><h2 style="margin:0;font-size:16px"><span class="pq-num">2</span> Resolver o que está pendente</h2>
+        <p class="desc" style="margin:2px 0 8px">Cada quadro é uma lista de trabalho. Clique em um quadro para ver só aquela lista. Vermelho tem algo para fazer; verde está em dia. No fim, clique em <b>Salvar</b> (<span class="pq-num sm">3</span>).</p>
+        <div id="pq-tiles" class="pq-tiles" role="tablist" aria-label="Listas de pendências"></div></div>
+      <div class="card" data-pq="acessos"><h2>Acessos de gerentes</h2>
+        <p class="desc">Confere se cada gerente cadastrado consegue ver todas as obras dele. Quando falta acesso (por exemplo, a obra entrou depois do cadastro do gerente) ou quando há acesso liberado por fora do cadastro, aparece aqui.</p>
+        <div id="pa-res" class="cad-res"></div>
+        <div class="cad-fbar"><span class="muted" id="pa-n" style="align-self:center;font-size:12px"></span><span style="flex:1"></span><button class="btn primary" id="pa-acertar">Acertar acessos</button></div>
+        <div class="tbl-box cad-box" style="max-height:55vh"><table class="list" id="pa-tbl"></table></div>
+        <div id="pa-si" hidden><h3 class="cad-h3">Cadastrado, mas a obra não aparece para a pessoa</h3>
+        <p class="desc">A pessoa está cadastrada nesta obra, mas pelo “quem planeja” nenhum insumo da obra é da área dela, então a obra não aparece na tela dela. Abra o quem planeja da obra e passe para essa área os insumos que ela deve planejar.</p>
+        <div class="cad-fbar"><span class="muted" id="pa-sin" style="align-self:center;font-size:12px"></span></div>
+        <div class="tbl-box cad-box" style="max-height:45vh"><table class="list" id="pa-sitbl"></table></div></div></div>
+      <div class="card" data-pq="novas"><h2>Obras novas para confirmar</h2>
         <p class="desc">Tudo aqui foi replicado do modelo padrão e espera a sua confirmação. Confira a base, quem planeja e os responsáveis, ajuste se precisar e clique em <b>Confirmar</b>. “Não planejar agora” guarda a obra como Pausada e ela para de aparecer aqui.</p>
         <div class="cad-fbar"><div><label class="lbl" for="cp-q">Buscar</label><input type="search" id="cp-q" placeholder="Empresa ou obra"></div>
           <div><label class="lbl" for="cp-reg">Regional</label><select id="cp-reg"></select></div><div><label class="lbl" for="cp-grupo">Grupo da obra</label><select id="cp-grupo"></select></div>
-          <div><label class="lbl" for="cp-st">Mostrar</label><select id="cp-st"><option value="aguardando">Aguardando confirmação</option><option value="feitas">Já decididas (falta Salvar)</option><option value="todas">Todas</option></select></div>
+          <div><label class="lbl" for="cp-st">Mostrar</label><select id="cp-st"><option value="todas">Todas as pendentes</option><option value="prontas">Prontas para confirmar</option><option value="ajuste">Precisam de ajuste</option><option value="gerente">Com gerente já cadastrado</option><option value="aguardando">Aguardando (todas)</option><option value="feitas">Já decididas (falta Salvar)</option></select></div>
           <span class="muted" id="cp-n" style="align-self:end;font-size:12px"></span></div>
         <div class="cad-selbar"><b>Para as obras listadas:</b><button class="btn sm" data-cp-lote="ok">Confirmar com as sugestões</button><button class="btn sm" data-cp-lote="pausa">Não planejar agora</button><span class="muted" style="font-size:12px">Use os filtros antes (ex.: grupo GERENCIAIS/INTERNAS → não planejar).</span></div>
-        <div id="cp-list" class="cp-list"></div></div>
-      <div class="card" id="cx-card" hidden><h2>Insumos que não estão em nenhum modelo</h2>
+        <div id="cp-list" class="cp-list"></div>
+        <details class="cp-resbox" id="cp-resbox"><summary>Resolvidas hoje (<span id="cp-res-n">0</span>)</summary><p class="muted" style="font-size:12px;margin:6px 0">Obras já salvas: saem da lista acima e ficam registradas aqui com o que foi definido. Para mudar algo, use “Ver em Empresas e obras”.</p><div class="tbl-box cad-box" style="max-height:40vh"><table class="list" id="cp-res"></table></div></details></div>
+      <div class="card" id="cx-card" data-pq="insumos"><h2>Insumos que não estão em nenhum modelo</h2>
         <p class="desc">Esses insumos aparecem nas obras novas, mas não estão em nenhuma base modelo e nunca foram planejados em outra obra. Decida aqui uma vez e vale para todas as obras novas que têm o insumo. Se escolher “Ninguém planeja”, ele fica fora do app.</p>
         <div class="cad-fbar"><div><label class="lbl" for="cx-q">Buscar</label><input id="cx-q" type="search" placeholder="código ou descrição"></div><label style="align-self:end;font-size:13px"><input type="checkbox" id="cx-falta" checked> só sem decisão</label><span class="muted" id="cx-n" style="align-self:end;font-size:12px"></span><span style="flex:1"></span><button class="btn" id="cx-ning" style="align-self:end">Os listados sem decisão: ninguém planeja</button></div>
         <div class="tbl-box cad-box" style="max-height:45vh"><table class="list" id="cx-tbl"></table></div></div>
-      <div class="card"><h2>Padronizar nomes e Regionais</h2>
+      <div class="card" data-pq="padrao"><h2>Padronizar nomes, Regionais e e-mails</h2>
         <p class="desc">Compara o nome da empresa, o nome da obra e a Regional do app com a Base da Estrutura (sem espaços repetidos). Os filtros do app usam esses nomes, então vale deixar tudo igual ao ERP.</p>
         <div class="cad-fbar"><div><label class="lbl" for="pz-campo">Mostrar</label><select id="pz-campo"></select></div><span class="muted" id="pz-n" style="align-self:end;font-size:12px"></span><span style="flex:1"></span><button class="btn" id="pz-todos" style="align-self:end">Usar a da estrutura em todos os listados</button></div>
         <p id="pz-var" class="cad-res"></p>
@@ -33,7 +46,7 @@
         <h3 class="cad-h3">Gerentes e e-mails</h3>
         <div class="cad-fbar"><span class="muted" id="pz-pn" style="align-self:center;font-size:12px"></span><span style="flex:1"></span><button class="btn" id="pz-ptodos">Corrigir espaços, maiúsculas e nomes de todos</button></div>
         <div class="tbl-box cad-box" style="max-height:40vh"><table class="list" id="pz-ptbl"></table></div></div>
-      <div class="card"><h2>Falta preencher nas obras do app</h2>
+      <div class="card" data-pq="falta"><h2>Falta preencher nas obras do app</h2>
         <p class="desc">Obras ativas que ainda não têm Gerente Administrativo, responsável pela Controladoria, Gerente Regional ou gerente em alguma área. Clique no que falta para preencher; dá para aplicar em todas as obras da empresa de uma vez.</p>
         <div class="cad-fbar"><div><label class="lbl" for="cf-o">O que falta</label><select id="cf-o"></select></div><div><label class="lbl" for="cf-emp">Empresa</label><select id="cf-emp"></select></div>
           <div><label class="lbl" for="cf-q">Buscar</label><input type="search" id="cf-q" placeholder="Obra ou empresa"></div><span class="muted" id="cf-n" style="align-self:end;font-size:12px"></span></div>
@@ -42,14 +55,14 @@
 
     <div class="card" id="cad-obras" hidden>
       <div class="cad-fbar"><div><label class="lbl" for="co-q">Buscar</label><input type="search" id="co-q" placeholder="Código, obra, empresa ou Regional"></div>
-        <div><label class="lbl" for="co-emp">Empresa</label><select id="co-emp"><option value="">Todas as empresas</option></select></div>
+        <div><label class="lbl">Regional</label><div class="slicer cms" data-cms="reg"><button type="button" class="sl-btn" aria-haspopup="true"><span class="sl-txt">Todas</span><span aria-hidden="true">▾</span></button><div class="sl-pop" hidden><input class="sl-q" type="search" placeholder="Pesquisar…" aria-label="Pesquisar em Regional"><div class="sl-acts"><button type="button" data-cmsa="todos">Marcar todos</button><button type="button" data-cmsa="limpar">Limpar</button><span class="sl-n muted"></span></div><div class="sl-list" role="listbox" aria-multiselectable="true"></div></div></div></div><div><label class="lbl">Empresa</label><div class="slicer cms" data-cms="emp"><button type="button" class="sl-btn" aria-haspopup="true"><span class="sl-txt">Todas</span><span aria-hidden="true">▾</span></button><div class="sl-pop" hidden><input class="sl-q" type="search" placeholder="Pesquisar…" aria-label="Pesquisar em Empresa"><div class="sl-acts"><button type="button" data-cmsa="todos">Marcar todos</button><button type="button" data-cmsa="limpar">Limpar</button><span class="sl-n muted"></span></div><div class="sl-list" role="listbox" aria-multiselectable="true"></div></div></div></div><select id="co-emp" hidden><option value=""></option></select>
         <div><label class="lbl" for="co-st">Mostrar</label><select id="co-st"><option value="ativas">Ativas</option><option value="todas">Todas</option><option value="inativas">Inativas</option><option value="app">Planejam no app</option><option value="pausa">Pausadas</option><option value="fora">Fora do app</option><option value="semger">Sem gerente em alguma área</option><option value="semreg">Sem Regional</option></select></div>
         <span class="muted" id="co-n" style="align-self:end;font-size:12px"></span></div>
       <div class="cad-selbar" id="co-selbar" hidden><b id="co-seln"></b>
         <button class="btn sm" data-co-lote="ativar">Ativar</button><button class="btn sm" data-co-lote="inativar">Inativar</button>
         <button class="btn sm" data-co-lote="app">Planejam no app</button><button class="btn sm" data-co-lote="pausa">Pausar</button><button class="btn sm" data-co-lote="fora">Fora do app</button>
         <span class="row" style="gap:4px"><input id="co-lote-reg" list="cad-regs" placeholder="Regional" style="width:130px"><button class="btn sm" data-co-lote="reg">Definir Regional</button></span>
-        <button class="btn sm" data-co-lote="limpar">Desmarcar</button></div>
+        <button class="btn sm" data-co-lote="limpar">Desmarcar</button><span class="row" style="gap:4px"><select id="co-lote-area" class="cad-in" aria-label="Área"></select><button class="btn sm" data-co-lote="areafora">Área fora do app</button><button class="btn sm" data-co-lote="areaapp">Área no app</button></span></div>
       <datalist id="cad-regs"></datalist>
       <p class="muted" style="font-size:12px;margin:6px 0"><b>Situação</b> vem do ERP (clique para trocar). <b>Pausada</b> é sua: a obra continua ativa, mas sai do planejamento e dos indicadores, e nenhuma planilha desfaz isso. Áreas em vermelho não têm gerente. Para marcar só uma área como fora do app, use “Planejamento fora do aplicativo” em Gerentes e acessos.</p>
       <div class="tbl-box cad-box"><table class="list" id="co-tbl"></table></div>
@@ -80,7 +93,7 @@
         <div class="cad-acts"><button class="btn primary" id="cadg-add">+ Nova linha</button><label class="btn" for="cadg-file">Importar aba 3 (Excel)</label><input type="file" id="cadg-file" accept=".xlsx,.xls" hidden><button class="btn" id="cadg-sugs" hidden>Usar as sugestões</button><button class="btn" id="cadg-xlsx">Baixar em Excel</button></div></div>
       <p class="muted" id="cadg-origem" style="font-size:12px;margin:6px 0 0"></p>
       <p class="muted" style="font-size:12px;margin:4px 0 6px">Uma linha por gerente × departamento × empresa/obra, como na aba 3. “Todas” vale para todas as obras da empresa que têm insumo daquele departamento. <span id="cadg-n"></span></p>
-      <div class="tbl-box cad-box"><table class="list" id="cadg-tbl"></table></div>
+      <div id="cadg-grupos" class="cp-list"></div><table class="list" id="cadg-tbl" hidden></table>
     </div>
 
     <div class="cad-save" id="cad-save" hidden><b id="cad-save-n"></b><span class="muted" id="cad-save-msg"></span><span style="flex:1"></span><button class="btn" id="cad-desc">Descartar</button><button class="btn primary" id="cad-salvar">Salvar</button></div>

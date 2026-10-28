@@ -46,3 +46,14 @@ Fluxo do dia a dia: subir só a **Base da Estrutura** (aba Base - Geral). Toda o
 - **Obras do app que não estão mais na estrutura**: lista e permite inativar, mostrando em quais empresas a mesma obra aparece.
 - **Gerentes e e-mails**: e-mail com espaço/maiúscula, mesmo e-mail com nomes diferentes, mesma pessoa com mais de um e-mail.
 - Ao salvar gerentes, a Regional já gravada da obra não é mais sobrescrita pela coluna Regional das linhas de gerente.
+
+## 28/10 (2): Pendências em quadros, acessos dos gerentes e Indicadores
+
+A partir daqui os arquivos do módulo foram extraídos da versão que está no ar (que recebeu ajustes fora deste repositório); `aplicar.py` não reproduz mais o arquivo completo.
+
+- **Pendências em quadros**: Acessos de gerentes · Obras novas · Insumos sem modelo · Falta preencher · Padronizar. Cada quadro mostra a contagem (vermelho/amarelo = fazer, verde = em dia) e só a lista escolhida aparece.
+- **Acessos de gerentes**: compara o que o cadastro de gerentes libera com o que está liberado (`restrito/pessoas`). Mostra acessos faltando, acessos dados por fora do cadastro e gerentes cadastrados em obra sem insumo da área (a obra não aparece para a pessoa). "Acertar acessos" traz os de fora para o cadastro; ao Salvar, o acesso é recalculado.
+- **Salvar** recalcula os acessos sempre que muda obra nova, situação, área fora do app ou quem planeja (antes só quando a lista de gerentes mudava; por isso um gerente cadastrado não via a obra que entrou depois).
+- Formulários antigos de gerente (Gerentes e acessos / Sem gerente) também gravam em `restrito/cad_gerentes` e não apagam mais os outros departamentos da pessoa.
+- **Base da Estrutura** também inativa as obras do app que saíram da estrutura ou estão com todas as linhas inativas no ERP (Pausada não muda).
+- **Indicadores** mostram quantas obras entram na conta e quantas ficaram fora (inativas, pausadas, fora do app).
