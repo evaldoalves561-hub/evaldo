@@ -1,0 +1,85 @@
+/* Cadastros */
+.cad-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}
+.cad-fbar{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:flex-end;background:var(--accent-soft);border:1px solid var(--accent);border-radius:10px;padding:8px 12px}
+.cad-fbar>div{display:flex;flex-direction:column;min-width:0}
+.cad-fbar .lbl{color:var(--accent)}
+.cad-fbar select{min-width:170px}
+.cad-fbar>div.cad-acts{flex-direction:row;flex-wrap:wrap;gap:6px;align-self:end}
+.cad-selbar{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:8px;padding:6px 10px;border:1px dashed var(--line-strong);border-radius:8px;font-size:13px}
+.cad-box{max-height:62vh;overflow:auto;margin-top:6px;border:1px solid var(--line);border-radius:8px}
+.cad-box table.list th{position:sticky;top:0;background:var(--surface);z-index:1}
+.cad-box table.list td{padding:4px 6px}
+.cad-cod{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.cad-in{font-size:13px!important;padding:3px 6px!important;max-width:100%}
+.cad-pb{border:0;cursor:pointer;font:inherit;font-size:12px;font-weight:600}
+.cad-chip{display:inline-block;font-size:11px;padding:1px 7px;margin:1px 2px 1px 0;border-radius:999px;background:var(--group);color:var(--ink);white-space:nowrap}
+.cad-chip.bad{background:var(--bad-soft);color:var(--bad)}
+tr.cad-inat td{opacity:.55}
+tr.cad-mud td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+.cad-res{font-size:13px;margin:8px 0 0;line-height:1.9}
+.cad-nova{margin-top:10px}.cad-nova summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.cad-save[hidden],.cad-selbar[hidden]{display:none}
+.cad-save{position:sticky;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:25;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;margin-top:12px;padding:10px 14px;background:var(--warn-soft);border:1px solid var(--warn);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.cad-save b{color:var(--warn)}
+@media (max-width:760px){.cad-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cad-plan{font-weight:600;border-radius:999px!important}
+.cad-plan.p-app{background:#DCE8F5;color:#1D4E89}.cad-plan.p-pausa{background:var(--group);color:var(--muted)}.cad-plan.p-fora{background:var(--warn-soft);color:var(--warn)}
+.cad-imp{border-left:4px solid var(--accent)}
+.cad-imp-res{margin-top:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--line);border-radius:8px;font-size:13px;line-height:1.6}
+.cad-sug{font-size:11px;color:var(--accent);margin-top:2px;white-space:nowrap}
+.cp-list{display:grid;gap:10px;margin-top:10px}
+.cp-card{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:10px 12px;background:var(--surface);display:grid;gap:8px;min-width:0}
+.cp-card.cp-ok{border-left-color:var(--good)}.cp-card.cp-pausa{border-left-color:var(--line-strong);opacity:.8}
+.cp-card header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 12px}
+.cp-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:flex-start}
+.cp-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:12px}
+.cp-grid>div,.cp-pes{display:flex;flex-direction:column;gap:3px;min-width:0}
+.cp-pessoas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 12px}
+.cp-pes.falta input[data-f="email"]{border-color:var(--bad)!important}
+.cp-src{font-size:11px;color:var(--accent)}.cp-src.falta{color:var(--bad)}
+.cp-mais summary{cursor:pointer;font-size:12px;color:var(--muted)}.cp-mais .cp-pessoas{margin-top:6px}
+.cp-card footer{display:flex;gap:6px}
+.cf-chip{border:0;cursor:pointer;font:inherit;font-size:11px}
+tr.cf-form td{background:var(--accent-soft)}
+@media (max-width:760px){.cp-grid,.cp-pessoas{grid-template-columns:minmax(0,1fr)}}
+.cp-ajuste{background:var(--bad-soft);color:var(--bad);border-radius:6px;padding:6px 10px;font-size:13px}
+.cp-req{border-color:var(--bad)!important}
+#pz-tbl mark{background:var(--warn-soft);color:var(--warn)}
+.cp-var{display:inline-flex;gap:6px;align-items:center;margin:0 10px 4px 0}
+.cp-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr) minmax(0,.8fr)}
+.cad-h3{font-size:14px;margin:16px 0 6px}
+#cx-card[hidden]{display:none}
+#pz-sbox[hidden]{display:none}
+.cp-emp{border:1px solid var(--line);border-radius:8px;background:var(--surface);min-width:0}
+.cp-emp-h{display:flex;width:100%;gap:8px;align-items:center;padding:8px 12px;border:0;background:none;cursor:pointer;font:inherit;text-align:left;flex-wrap:wrap}
+.cp-emp-h:hover{background:var(--accent-soft)}
+.cp-emp .tbl-box{margin:0 8px 8px}
+table.cp-tab td{padding:4px 6px;vertical-align:middle}table.cp-tab td.cp-acts{white-space:nowrap;text-align:right}
+tr.cp-row-ab td{background:var(--accent-soft)}tr.cp-det>td{padding:6px 0 10px!important;background:var(--bg)}
+.cp-esc{border:1px solid var(--accent);background:var(--accent-soft);border-radius:8px;padding:8px 12px;font-size:13px;display:grid;gap:6px}
+.cp-esc-l{display:flex;flex-wrap:wrap;gap:4px 14px;max-height:160px;overflow:auto}.cp-esc-l label{display:flex;gap:4px;align-items:center;white-space:nowrap}
+.cp-resbox{margin-top:12px}.cp-resbox summary{cursor:pointer;font-weight:600;color:var(--accent)}
+.pq-num{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-family:var(--f-mono);margin-right:6px;vertical-align:2px}.pq-num.sm{width:18px;height:18px;font-size:11px;margin:0}
+.pq-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.pq-tile{all:unset;box-sizing:border-box;cursor:pointer;background:var(--surface);padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0;border-top:3px solid transparent}
+.pq-tile:hover{background:var(--accent-soft)}.pq-tile:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.pq-tile[aria-selected="true"]{background:var(--accent-soft);border-top-color:var(--accent)}
+.pq-tile .k-l{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.pq-tile .k-v{font-family:var(--f-mono);font-size:21px}.pq-tile .k-s{font-size:12px;color:var(--muted);line-height:1.35}
+.pq-tile.bad .k-v{color:var(--bad)}.pq-tile.warn .k-v{color:var(--warn)}.pq-tile.ok .k-v{color:var(--good)}
+#cad-pend [data-pq][hidden],#cad-kpi[hidden],#pp-box[hidden]{display:none}
+.pq-xls{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-top:10px;padding:8px 12px;border:1px dashed var(--line-strong);border-radius:8px;font-size:13px}
+.pp-box{border-left:4px solid var(--accent)}
+.pp-top{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between}
+.pp-bar{height:6px;background:var(--line);border-radius:999px;overflow:hidden;margin:8px 0 12px}.pp-bar>i{display:block;height:100%;background:var(--accent)}
+.pp-et{display:flex;flex-wrap:wrap;gap:4px}.pp-et span{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--group);color:var(--muted)}.pp-et span.on{background:var(--accent);color:#fff}.pp-et span.ok{background:var(--good-soft,#E3F1E7);color:var(--good)}
+.pp-tit{font-size:18px;font-weight:600;margin:0}.pp-sub{color:var(--muted);font-size:13px;margin:2px 0 10px}
+.pp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}.pp-grid>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.pp-grid .cad-in{font-size:14px!important;padding:6px 8px!important}
+.pp-acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}.pp-acts .btn.primary{font-size:15px;padding:8px 18px}
+.pp-cmp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.pp-cmp>div{border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+@media (max-width:760px){.pp-grid,.pp-cmp{grid-template-columns:minmax(0,1fr)}}
+.cp-gerchip{background:#DCE8F5;color:#1D4E89}
+@media (max-width:760px){.pq-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.cad-col>h2.cad-col-h{cursor:pointer;user-select:none}.cad-col>h2.cad-col-h::before{content:"▾ ";color:var(--muted)}
+.cad-col.fechado>h2.cad-col-h::before{content:"▸ "}.cad-col.fechado>*:not(h2){display:none!important}
